@@ -6,6 +6,7 @@ from torch.autograd import Variable
 import numpy as np
 
 AGG_OPS = ('none', 'maximum', 'minimum', 'count', 'sum', 'average')
+
 class WordEmbedding(nn.Module):
     def __init__(self, word_emb, N_word, gpu, SQL_TOK,
             trainable=False):
@@ -71,7 +72,7 @@ class WordEmbedding(nn.Module):
                     else:
                         history_val.append(sum(emb_list) / float(ws_len))
                 #ROOT
-                elif isinstance(item,basestring):
+                elif isinstance(item, str):
                     if item == "ROOT":
                         item = "root"
                     elif item == "asc":
@@ -91,7 +92,7 @@ class WordEmbedding(nn.Module):
                     elif item in ('>=', '<=', '!='):
                         history_val.append((self.word_emb.get(item[0], np.zeros(self.N_word, dtype=np.float32)) +
                                             self.word_emb.get(item[1], np.zeros(self.N_word, dtype=np.float32))) / 2)
-                elif isinstance(item,int):
+                elif isinstance(item, int):
                     history_val.append(self.word_emb.get(AGG_OPS[item], np.zeros(self.N_word, dtype=np.float32)))
                 else:
                     print("Warning: unsupported data type in history! {}".format(item))

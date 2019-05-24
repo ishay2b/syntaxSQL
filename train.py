@@ -14,6 +14,8 @@ from models.multisql_predictor import MultiSqlPredictor
 from models.op_predictor import OpPredictor
 from models.root_teminal_predictor import RootTeminalPredictor
 from models.andor_predictor import AndOrPredictor
+from timeit import default_timer
+
 
 TRAIN_COMPONENTS = ('multi_sql','keyword','col','op','agg','root_tem','des_asc','having','andor')
 SQL_TOK = ['<UNK>', '<END>', 'WHERE', 'AND', 'EQL', 'GT', 'LT', '<BEG>']
@@ -64,12 +66,9 @@ if __name__ == '__main__':
     # sql_data, table_data, val_sql_data, val_table_data, \
     #         test_sql_data, test_table_data, \
     #         TRAIN_DB, DEV_DB, TEST_DB = load_dataset(args.dataset, use_small=USE_SMALL)
-
-    word_emb = load_word_emb('%s/glove.%dB.%dd.txt' % (args.glove_root, B_word, N_word),
-            load_used=args.train_emb, use_small=USE_SMALL)
-    print("finished load word embedding")
-    #word_emb = load_concat_wemb('glove/glove.42B.300d.txt', "/data/projects/paraphrase/generation/para-nmt-50m/data/paragram_sl999_czeng.txt")
     model = None
+    start_time = default_timer()
+
     if args.train_component == "multi_sql":
         model = MultiSqlPredictor(N_word=N_word,N_h=N_h,N_depth=N_depth,gpu=GPU, use_hs=use_hs)
     elif args.train_component == "keyword":
@@ -90,7 +89,14 @@ if __name__ == '__main__':
         model = AndOrPredictor(N_word=N_word, N_h=N_h, N_depth=N_depth, gpu=GPU, use_hs=use_hs)
     # model = SQLNet(word_emb, N_word=N_word, gpu=GPU, trainable_emb=args.train_emb)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay = 0)
-    print("finished build model")
+    print("finished build model in %d seconds" %
+          (default_timer() - start_time))
+    start_time = default_timer()
+    word_emb = load_word_emb('%s/glove.%dB.%dd.txt' % (args.glove_root,
+                                                       B_word, N_word), load_used=args.train_emb, use_small=USE_SMALL)
+    print("finished load word embedding in %s seconds" %
+          (default_timer() - start_time))
+    # word_emb = load_concat_wemb('glove/glove.42B.300d.txt', "/data/projects/paraphrase/generation/para-nmt-50m/data/paragram_sl999_czeng.txt")
 
     print_flag = False
     embed_layer = WordEmbedding(word_emb, N_word, gpu=GPU,
@@ -100,7 +106,7 @@ if __name__ == '__main__':
     for i in range(args.epoch):
         print('Epoch %d @ %s'%(i+1, datetime.datetime.now()))
         print(' Loss = %s'%epoch_train(
-                model, optimizer, BATCH_SIZE,args.train_component,embed_layer,train_data,table_type=args.table_type))
+                model, optimizer, BATCH_SIZE, args.train_component,embed_layer,train_data,table_type=args.table_type))
         acc = epoch_acc(model, BATCH_SIZE, args.train_component,embed_layer,dev_data,table_type=args.table_type)
         if acc > best_acc:
             best_acc = acc

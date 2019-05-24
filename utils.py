@@ -151,7 +151,7 @@ def epoch_train(model, optimizer, batch_size, component,embed_layer,data, table_
         # print("label {}".format(label))
         loss = model.loss(score, label)
         # print("loss {}".format(loss.data.cpu().numpy()))
-        cum_loss += loss.data.cpu().numpy()[0]*(ed - st)
+        cum_loss += loss.data.cpu().numpy().mean()*(ed - st)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -170,7 +170,7 @@ def epoch_acc(model, batch_size, component, embed_layer,data, table_type, error_
     total_error = 0.0
     print("dev data size {}".format(len(data)))
     while st < len(data):
-        ed = st+batch_size if st+batch_size < len(perm) else len(perm)
+        ed = st + batch_size if st + batch_size < len(perm) else len(perm)
 
         q_seq, history, label = to_batch_seq(data, perm, st, ed)
         q_emb_var, q_len = embed_layer.gen_x_q_batch(q_seq)
@@ -309,17 +309,29 @@ def test_acc(model, batch_size, data,output_path):
     f.close()
 
 
+def parse_line(line):
+    ''' Single line parsing to be called using map '''
+    sep = line.index(' ')
+    key = line[:sep]
+    nums = np.fromstring(line[sep + 1:], sep=' ')
+    return key, nums
+
 def load_word_emb(file_name, load_used=False, use_small=False):
+    from timeit import default_timer
+    from multiprocessing import Pool
+
     if not load_used:
-        print ('Loading word embedding from %s'%file_name)
-        ret = {}
-        with open(file_name) as inf:
-            for idx, line in enumerate(inf):
-                if (use_small and idx >= 5000):
-                    break
-                info = line.strip().split(' ')
-                if info[0].lower() not in ret:
-                    ret[info[0]] = np.array(map(lambda x:float(x), info[1:]))
+        start_time = default_timer()
+        lines = open(file_name, "rt").readlines()
+        print("Embeding file loded in %d seconds" %
+            (default_timer() - start_time))
+        start_time = default_timer()
+        pool = Pool()
+        key_vals_list = pool.map(parse_line, lines)
+        runtime = default_timer() - start_time
+        print("Total loading of embeding took %d seconds, Avg %.2fms " %
+            (runtime, 1000.*runtime / len(lines)))
+        ret = {key: val for key, val in key_vals_list}
         return ret
     else:
         print ('Load used word embedding')

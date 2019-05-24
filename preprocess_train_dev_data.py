@@ -6,9 +6,10 @@ import json
 import sys
 from collections import defaultdict
 from os.path import join as pj
+from os import environ
 
-# TODO: change dirs
-SPIDER_DB_FOLDER = '/home/ishay/projects/rupert/spider-database/'
+# TODO: export SPIDER_DB_FOLDER=
+SPIDER_DB_FOLDER = environ.get("SPIDER_DB_FOLDER", "/home/ishay/projects/rupert/spider-database/")
 
 if len(sys.argv) > 1:
     train_dev = sys.argv[1]
@@ -56,14 +57,15 @@ KW_DICT = {
 ORDER_OPS = {
     'desc': 0,
     'asc': 1}
-AGG_OPS = ('none','max', 'min', 'count', 'sum', 'avg')
+AGG_OPS = ('none', 'max', 'min', 'count', 'sum', 'avg')
 
 COND_OPS = {
-    'and':0,
-    'or':1
+    'and': 0,
+    'or': 1
 }
 
-def convert_to_op_index(is_not,op):
+
+def convert_to_op_index(is_not, op):
     op = OLD_WHERE_OPS[op]
     if is_not and op == "in":
         return 7
