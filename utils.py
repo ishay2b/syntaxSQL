@@ -294,7 +294,7 @@ def test_acc(model, batch_size, data,output_path):
     f = open(output_path,"w")
     for item in data[:]:
         db_id = item["db_id"]
-        if db_id not in table_dict: print "Error %s not in table_dict" % db_id
+        if db_id not in table_dict: print("Error %s not in table_dict" % db_id)
         # signal.signal(signal.SIGALRM, timeout_handler)
         # signal.alarm(2) # set timer to prevent infinite recursion in SQL generation
         sql = model.forward([item["question_toks"]]*batch_size,[],table_dict[db_id])

@@ -5,20 +5,26 @@ python3 preprocess_train_dev_data.py train|dev (full|part)
 import json
 import sys
 from collections import defaultdict
+from os.path import join as pj
 
-###TODO: change dirs
-train_data_path = "./data/train.json"
-table_data_path = "./data/tables.json"
-if train_dev == "dev":
-    train_data_path = "./data/dev.json"
+# TODO: change dirs
+SPIDER_DB_FOLDER = '/home/ishay/projects/rupert/spider-database/'
 
-train_dev = "train"
 if len(sys.argv) > 1:
     train_dev = sys.argv[1]
+else:
+    train_dev = "train"  # Train by default.
+
+table_data_path = pj(SPIDER_DB_FOLDER, "tables.json")
+
+if train_dev == "dev":
+    train_data_path = pj(SPIDER_DB_FOLDER, "dev.json")
+else:
+    train_data_path = pj(SPIDER_DB_FOLDER, "train_spider.json")
+
+
 train_data = json.load(open(train_data_path))
-history_option = "full"
-if len(sys.argv) > 2:
-    history_option = sys.argv[2]
+history_option = sys.argv[2] if len(sys.argv) > 2 else 'full'
 
 OLD_WHERE_OPS = ('not', 'between', '=', '>', '<', '>=', '<=', '!=', 'in', 'like', 'is', 'exists')
 NEW_WHERE_OPS = ('=','>','<','>=','<=','!=','like','not in','in','between','is')
@@ -653,6 +659,8 @@ def parse_data(data):
         else:
             parser_item(item["question_toks"], item["sql"], table_dict[item["db_id"]], [], dataset)
     print("finished preprocess")
+    import os
+    os.makedirs('generated_data', exist_ok=True)
     for key in dataset:
         print("dataset:{} size:{}".format(key, len(dataset[key])))
         json.dump(dataset[key], open("./generated_data/{}_{}_{}.json".format(history_option,train_dev, key), "w"), indent=2)

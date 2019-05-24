@@ -4,7 +4,7 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from net_utils import run_lstm, col_name_encode
+from models.net_utils import run_lstm, col_name_encode
 
 
 class AndOrPredictor(nn.Module):

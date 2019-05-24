@@ -23,8 +23,9 @@ if __name__ == '__main__':
             help='If set, use small data; used for fast debugging.')
     parser.add_argument('--save_dir', type=str, default='',
             help='set model save directory.')
-    parser.add_argument('--data_root', type=str, default='',
-            help='root path for generated_data')
+    parser.add_argument('--data_root', type=str, default='', help='root path for generated_data')
+    parser.add_argument('--glove_root', type=str, default='glove',
+                        help='Path for downloaded Glove.')
     parser.add_argument('--train_emb', action='store_true',
             help='Train word embedding.')
     parser.add_argument('--train_component',type=str,default='',
@@ -64,7 +65,7 @@ if __name__ == '__main__':
     #         test_sql_data, test_table_data, \
     #         TRAIN_DB, DEV_DB, TEST_DB = load_dataset(args.dataset, use_small=USE_SMALL)
 
-    word_emb = load_word_emb('glove/glove.%dB.%dd.txt'%(B_word,N_word), \
+    word_emb = load_word_emb('%s/glove.%dB.%dd.txt' % (args.glove_root, B_word, N_word),
             load_used=args.train_emb, use_small=USE_SMALL)
     print("finished load word embedding")
     #word_emb = load_concat_wemb('glove/glove.42B.300d.txt', "/data/projects/paraphrase/generation/para-nmt-50m/data/paragram_sl999_czeng.txt")
