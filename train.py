@@ -26,8 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('--save_dir', type=str, default='',
             help='set model save directory.')
     parser.add_argument('--data_root', type=str, default='', help='root path for generated_data')
-    parser.add_argument('--glove_root', type=str, default='glove',
-                        help='Path for downloaded Glove.')
+    parser.add_argument('--glove_root', type=str, default='glove', help='Path for downloaded Glove.')
     parser.add_argument('--train_emb', action='store_true',
             help='Train word embedding.')
     parser.add_argument('--train_component',type=str,default='',

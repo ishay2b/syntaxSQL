@@ -14,15 +14,15 @@ class AggPredictor(nn.Module):
         self.gpu = gpu
         self.use_hs = use_hs
 
-        self.q_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.q_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
-        self.hs_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.hs_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
-        self.col_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.col_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
@@ -31,14 +31,14 @@ class AggPredictor(nn.Module):
         self.agg_num_out_q = nn.Linear(N_h, N_h)
         self.agg_num_out_hs = nn.Linear(N_h, N_h)
         self.agg_num_out_c = nn.Linear(N_h, N_h)
-        self.agg_num_out = nn.Sequential(nn.Tanh(), nn.Linear(N_h, 4)) #for 0-3 agg num
+        self.agg_num_out = nn.Sequential(nn.Tanh(), nn.Linear(N_h, 4))  # for 0-3 agg num
 
         self.q_att = nn.Linear(N_h, N_h)
         self.hs_att = nn.Linear(N_h, N_h)
         self.agg_out_q = nn.Linear(N_h, N_h)
         self.agg_out_hs = nn.Linear(N_h, N_h)
         self.agg_out_c = nn.Linear(N_h, N_h)
-        self.agg_out = nn.Sequential(nn.Tanh(), nn.Linear(N_h, 5)) #for 1-5 aggregators
+        self.agg_out = nn.Sequential(nn.Tanh(), nn.Linear(N_h, 5))  # for 1-5 aggregators
 
         self.softmax = nn.Softmax() #dim=1
         self.CE = nn.CrossEntropyLoss()

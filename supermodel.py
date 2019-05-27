@@ -79,6 +79,7 @@ def to_batch_tables(tables, B, table_type):
 
     return col_seq
 
+
 class SuperModel(nn.Module):
     def __init__(self, word_emb, N_word, N_h=300, N_depth=2, gpu=True, trainable_emb=False, table_type="std", use_hs=True):
         super(SuperModel, self).__init__()
@@ -95,10 +96,10 @@ class SuperModel(nn.Module):
                 self.SQL_TOK, trainable=trainable_emb)
 
         # initial all modules
-        self.multi_sql = MultiSqlPredictor(N_word=N_word,N_h=N_h,N_depth=N_depth,gpu=gpu, use_hs=use_hs)
+        self.multi_sql = MultiSqlPredictor(N_word=N_word, N_h=N_h, N_depth=N_depth, gpu=gpu, use_hs=use_hs)
         self.multi_sql.eval()
 
-        self.key_word = KeyWordPredictor(N_word=N_word,N_h=N_h,N_depth=N_depth,gpu=gpu, use_hs=use_hs)
+        self.key_word = KeyWordPredictor(N_word=N_word, N_h=N_h, N_depth=N_depth,gpu=gpu, use_hs=use_hs)
         self.key_word.eval()
 
         self.col = ColPredictor(N_word=N_word,N_h=N_h,N_depth=N_depth,gpu=gpu, use_hs=use_hs)

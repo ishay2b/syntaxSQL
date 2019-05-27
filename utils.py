@@ -288,13 +288,16 @@ def timeout_handler(num, stack):
     print("Received SIGALRM")
     raise Exception("Timeout")
 
-## used in test.py
-def test_acc(model, batch_size, data,output_path):
-    table_dict = get_table_dict("./data/tables.json")
-    f = open(output_path,"w")
+
+def test_acc(model, batch_size, data, output_path, table_dict):
+    # used in test.py
+    import os
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)  # Create folder if not exists.
+    f = open(output_path, "w")
     for item in data[:]:
         db_id = item["db_id"]
-        if db_id not in table_dict: print("Error %s not in table_dict" % db_id)
+        if db_id not in table_dict:
+            print("Error %s not in table_dict" % db_id)
         # signal.signal(signal.SIGALRM, timeout_handler)
         # signal.alarm(2) # set timer to prevent infinite recursion in SQL generation
         sql = model.forward([item["question_toks"]]*batch_size,[],table_dict[db_id])

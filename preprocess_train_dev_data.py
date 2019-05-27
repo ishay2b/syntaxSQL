@@ -634,10 +634,9 @@ def parser_item(question_tokens, sql, table, history, dataset):
 
 
 def get_table_dict(table_data_path):
+    # From list to dict, Might think using pandas instead.
     data = json.load(open(table_data_path))
-    table = dict()
-    for item in data:
-        table[item["db_id"]] = item
+    table = {item["db_id"]: item for item in data}
     return table
 
 

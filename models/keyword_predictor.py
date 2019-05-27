@@ -16,15 +16,15 @@ class KeyWordPredictor(nn.Module):
         self.gpu = gpu
         self.use_hs = use_hs
 
-        self.q_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.q_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
-        self.hs_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.hs_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
-        self.kw_lstm = nn.LSTM(input_size=N_word, hidden_size=N_h/2,
+        self.kw_lstm = nn.LSTM(input_size=N_word, hidden_size=int(N_h / 2),
                 num_layers=N_depth, batch_first=True,
                 dropout=0.3, bidirectional=True)
 
@@ -41,7 +41,7 @@ class KeyWordPredictor(nn.Module):
         self.kw_out_kw = nn.Linear(N_h, N_h)
         self.kw_out = nn.Sequential(nn.Tanh(), nn.Linear(N_h, 1))
 
-        self.softmax = nn.Softmax() #dim=1
+        self.softmax = nn.Softmax()  # dim=1
         self.CE = nn.CrossEntropyLoss()
         self.log_softmax = nn.LogSoftmax()
         self.mlsml = nn.MultiLabelSoftMarginLoss()
